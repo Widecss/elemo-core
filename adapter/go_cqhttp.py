@@ -1,7 +1,7 @@
-from . import BaseDriver
+from . import BaseAdapter
 
 
-class GoCQHTTPDriver(BaseDriver):
+class GoCQHTTPAdapter(BaseAdapter):
     async def data_receiver(self, session):
         pass
         # async with session.ws_connect('http://127.0.0.1:6700/') as ws:

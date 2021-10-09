@@ -12,7 +12,7 @@ class EventQueue(Queue):
     pass
 
 
-class BaseDriver:
+class BaseAdapter:
     def __init__(self, event_queue: EventQueue):
         self._queue: EventQueue = event_queue
 
