@@ -1,12 +1,25 @@
 """
-主文件
+程序入口
 """
+
 from libs import aio
 
 
-async def main():
-    print("Hello, Elemo!")
+class ContextManager:
+    def __init__(self):
+        pass
+
+    async def _loop(self):
+        pass
+
+    def loop(self):
+        aio.run(self._loop())
+
+
+def main():
+    context = ContextManager()
+    context.loop()
 
 
 if __name__ == '__main__':
-    aio.run(main())
+    main()

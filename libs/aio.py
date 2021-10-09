@@ -6,6 +6,10 @@ import platform
 from functools import partial
 
 
+def add_task(future):
+    asyncio.get_event_loop()
+
+
 async def run_async(sync_func, *args, **kwargs):
     return await asyncio.get_event_loop().run_in_executor(None, partial(sync_func, *args, **kwargs))
 
