@@ -1,13 +1,30 @@
 """
 程序入口
 """
-
+from adapter import BotAdapter, EventData
 from libs import aio
 
 
 class ContextManager:
+    adapters: list
+    modules: list
+
     def __init__(self):
+        self.adapters = []
+        self.modules = []
+
+        self.inject_adapters()
+        self.inject_modules()
+
+    def inject_adapters(self):
         pass
+
+    def inject_modules(self):
+        pass
+
+    async def handler_event(self, bot: BotAdapter, event: EventData):
+        for module in self.modules:
+            await module.handler(bot, event)
 
     async def _loop(self):
         pass
