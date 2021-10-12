@@ -34,6 +34,8 @@ class MessageParser:
 
 
 class EventType(Enum):
+    """事件类型"""
+
     NoticeMessage = "NoticeMessage"
     """提示消息"""
 
@@ -50,26 +52,32 @@ class EventType(Enum):
 class BotEvent:
     @property
     def event_type(self) -> EventType:
+        """事件类型"""
         raise NotImplementedError()
 
     @property
     def sender_id(self) -> str:
+        """发送者 id"""
         raise NotImplementedError()
 
     @property
     def sender_name(self) -> str:
+        """发送者名称"""
         raise NotImplementedError()
 
     @property
     def group_id(self) -> str:
+        """群组 id, 在非群组消息时可能为空"""
         raise NotImplementedError()
 
     @property
     def group_name(self) -> str:
+        """群组名称, 在非群组消息时可能为空"""
         raise NotImplementedError()
 
     @property
     def message(self) -> MessageChain:
+        """消息内容"""
         raise NotImplementedError()
 
 
