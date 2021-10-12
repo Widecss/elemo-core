@@ -1,7 +1,7 @@
 """
 程序入口
 """
-from adapter import BotAdapter, EventData
+from adapter import BotAdapter, BotEvent
 from libs import aio
 
 
@@ -22,7 +22,7 @@ class ContextManager:
     def inject_modules(self):
         pass
 
-    async def handler_event(self, bot: BotAdapter, event: EventData):
+    async def handler_event(self, bot: BotAdapter, event: BotEvent):
         for module in self.modules:
             await module.handler(bot, event)
 

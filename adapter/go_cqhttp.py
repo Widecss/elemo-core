@@ -2,17 +2,33 @@ import logging
 
 from aiohttp import WSMsgType
 
-from . import BotAdapter, BotApi, EventData
+from tools.message_chain import MessageChain, Image, Text
+from . import (
+    BotAdapter,
+    BotApi,
+    BotEvent,
+    MessageParser
+)
 
 
-class GoCQHttpEventData(EventData):
+class GoCQHttpMessageParser(MessageParser):
+
+    def _dump_text(self, text: Text):
+        return text
+
+    def _dump_image(self, image: Image):
+        pass
+
+
+class GoCQHttpEvent(BotEvent):
     @property
     def message(self):
         return
 
 
 class GoCQHttpApi(BotApi):
-    pass
+    async def reply(self, message_chain: MessageChain):
+        pass
 
 
 class GoCQHttpAdapter(BotAdapter):
