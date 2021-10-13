@@ -13,7 +13,7 @@ __all__ = ["BotAdapter", "BotEventType", "BotEvent", "BotApi", "BotEventParser"]
 
 
 class BotEventType(Enum):
-    """事件类型"""
+    """Bot 事件类型"""
 
     NoticeMessage = "NoticeMessage"
     """提示消息"""
@@ -35,6 +35,7 @@ class BotEventType(Enum):
 
 
 class BotEvent:
+    """Bot 事件"""
     @property
     def event_type(self) -> BotEventType:
         """事件类型"""
@@ -87,6 +88,11 @@ class BotEvent:
 
 class BotEventParser:
     def dump(self, message_node: MessageNode):
+        """将消息链的节点转换成原始数据
+
+        :param message_node: 消息链的节点
+        :return: 原始数据
+        """
         for _type, _func in [
             (Text, self.dump_text),
             (Image, self.dump_image),
@@ -100,12 +106,27 @@ class BotEventParser:
         raise NotImplementedError()
 
     def dump_text(self, text: Text):
+        """将文本消息节点转换成原始数据
+
+        :param text: 文本消息
+        :return: 原始数据
+        """
         raise NotImplementedError()
 
     def dump_image(self, image: Image):
+        """将图片消息节点转换成原始数据
+
+        :param image: 图片消息
+        :return: 原始数据
+        """
         raise NotImplementedError()
 
     def dump_audio(self, audio: Audio):
+        """将音频消息节点转换成原始数据
+
+        :param audio: 音频消息
+        :return: 原始数据
+        """
         raise NotImplementedError()
 
 
@@ -115,8 +136,7 @@ class BotApi:
 
 
 class BotAdapter:
-    """
-    Bot客户端的适配器
+    """Bot客户端的适配器
 
     使用 start_event_loop() 异步开启循环
 
@@ -126,8 +146,7 @@ class BotAdapter:
     """事件处理器, 在适配器加载时注入"""
 
     async def handle_event(self, event_data):
-        """
-        将事件传入以进行处理
+        """将事件传入以进行处理
 
         :param event_data: 事件数据, 将直接传给 BotEventParser.load()
         """
@@ -138,16 +157,14 @@ class BotAdapter:
             )
 
     def get_api(self) -> BotApi:
-        """
-        将自定义的 BotApi 传出
+        """将自定义的 BotApi 传出
 
         :return: 自定义的 BotApi
         """
         raise NotImplementedError()
 
     def get_parser(self) -> BotEventParser:
-        """
-        将自定义的 BotEventParser 传出
+        """将自定义的 BotEventParser 传出
 
         :return: 自定义的 BotEventParser
         """

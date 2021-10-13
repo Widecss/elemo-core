@@ -8,7 +8,6 @@ __all__ = [
     "name", "description"
 ]
 
-
 name = ""
 description = ""
 
@@ -54,4 +53,19 @@ class BotCommand:
         :param event: 事件
         :return: 返回 True 表示拦截该消息, 不再继续传给其他模块处理
         """
+        raise NotImplementedError()
+
+
+class BotTask:
+    name: str = None
+    """任务名称"""
+
+    description: str = None
+    """任务描述"""
+
+    cron: str = ""
+    """Cron 表达式"""
+
+    async def run(self):
+        """任务处理函数, 将在每一个设定的周期执行"""
         raise NotImplementedError()

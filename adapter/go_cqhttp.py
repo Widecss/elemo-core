@@ -1,3 +1,6 @@
+"""
+Go_CQHttp 适配器
+"""
 import logging
 
 import aiohttp

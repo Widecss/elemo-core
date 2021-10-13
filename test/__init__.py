@@ -4,12 +4,12 @@
 
 
 class CommandTest:
-    pass
+    """测试指令模块, 保证其正常处理事件和返回结果"""
 
 
 class AdapterTest:
-    pass
+    """测试适配器, 保证其正常接收和发送消息"""
 
 
 class ServiceTest:
-    pass
+    """测试服务模块, 保证其正常读取和保存数据"""
