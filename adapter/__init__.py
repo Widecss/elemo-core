@@ -63,7 +63,7 @@ class BotEvent:
 
     @property
     def message(self) -> MessageChain:
-        """消息内容"""
+        """原消息内容"""
         raise NotImplementedError()
 
     @property
@@ -80,17 +80,15 @@ class BotEvent:
 
     @property
     def command_argv(self) -> str:
-        """触发的指令对应的参数, 也就是后方对应的无选项内容
-
-        格式为 [("name", "content"), ...]"""
+        """指令后方的无选项内容"""
         raise NotImplementedError()
 
 
 class BotEventParser:
     def dump(self, message_node: MessageNode):
-        """将消息链的节点转换成原始数据
+        """将 MessageNode 转换成原始数据
 
-        :param message_node: 消息链的节点
+        :param message_node: MessageNode 对象
         :return: 原始数据
         """
         for _type, _func in [
@@ -103,28 +101,33 @@ class BotEventParser:
         return None
 
     def load(self, event_data) -> BotEvent:
+        """将原始事件数据转换成自定义 BotEvent 对象
+
+        :param event_data: 传入 BotAdapter.handle_event() 的事件数据
+        :return: 自定义 BotEvent 对象
+        """
         raise NotImplementedError()
 
     def dump_text(self, text: Text):
-        """将文本消息节点转换成原始数据
+        """将 Text 节点转换成原始数据
 
-        :param text: 文本消息
+        :param text: Text 节点
         :return: 原始数据
         """
         raise NotImplementedError()
 
     def dump_image(self, image: Image):
-        """将图片消息节点转换成原始数据
+        """将 Image 节点转换成原始数据
 
-        :param image: 图片消息
+        :param image: Image 节点
         :return: 原始数据
         """
         raise NotImplementedError()
 
     def dump_audio(self, audio: Audio):
-        """将音频消息节点转换成原始数据
+        """将 Audio 节点转换成原始数据
 
-        :param audio: 音频消息
+        :param audio: Audio 节点
         :return: 原始数据
         """
         raise NotImplementedError()
@@ -138,9 +141,10 @@ class BotApi:
 class BotAdapter:
     """Bot客户端的适配器
 
-    使用 start_event_loop() 异步开启循环
+    start() 将在启动时调用, 用于开启事件接收
+    close() 将在关闭时调用, 用于关闭事件接收
 
-    使用 handler_event() 传入自定义 BotEvent 以处理事件
+    handle_event() 传入事件数据以处理事件
     """
     event_handler = None
     """事件处理器, 在适配器加载时注入"""
