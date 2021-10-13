@@ -9,7 +9,7 @@ from . import (
     BotAdapter,
     BotApi,
     BotEvent,
-    BotEventParser
+    BotEventParser, BotEventType
 )
 
 
@@ -18,8 +18,40 @@ class GoCQHttpEvent(BotEvent):
         self.raw = raw
 
     @property
-    def message(self):
-        return
+    def event_type(self) -> BotEventType:
+        pass
+
+    @property
+    def sender_id(self) -> str:
+        pass
+
+    @property
+    def sender_name(self) -> str:
+        pass
+
+    @property
+    def group_id(self) -> str:
+        pass
+
+    @property
+    def group_name(self) -> str:
+        pass
+
+    @property
+    def command(self) -> str:
+        pass
+
+    @property
+    def command_options(self) -> list[tuple[str, str]]:
+        pass
+
+    @property
+    def command_argv(self) -> str:
+        pass
+
+    @property
+    def message(self) -> MessageChain:
+        pass
 
 
 class GoCQHttpApi(BotApi):
