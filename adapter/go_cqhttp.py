@@ -3,16 +3,18 @@ Go_CQHttp 适配器
 """
 import logging
 
-import aiohttp
-from aiohttp import WSMsgType
+from aiohttp import WSMsgType, ClientSession, WSMessage
 
-from tools import Audio
-from tools.message_chain import MessageChain, Image, Text
+from tools.message_chain import (
+    MessageChain,
+    Image, Text, Audio
+)
 from . import (
     BotAdapter,
     BotApi,
     BotEvent,
-    BotEventParser, BotEventType
+    BotEventParser,
+    BotEventType
 )
 
 
@@ -77,22 +79,19 @@ class GoCQHttpEventParser(BotEventParser):
 
 
 class GoCQHttpAdapter(BotAdapter):
-    def __init__(self):
-        self.api = GoCQHttpApi()
-        self.parser = GoCQHttpEventParser()
 
     def get_api(self) -> BotApi:
-        return self.api
+        return GoCQHttpApi()
 
     def get_parser(self) -> GoCQHttpEventParser:
-        return self.parser
+        return GoCQHttpEventParser()
 
-    async def data_receiver(self, session: aiohttp.ClientSession):
+    async def data_receiver(self, session: ClientSession):
         async with session.ws_connect('http://127.0.0.1:6700/') as ws:
             async for response in ws:
-                response: aiohttp.WSMessage
+                response: WSMessage
                 if response.type == WSMsgType.TEXT:
-                    await self.handle_event(response.data)
+                    await self.handle_event(response.json())
                 elif response.type == WSMsgType.ERROR:
                     logging.error(f"GoCQHttp receive error: {response.data}")
 
@@ -100,8 +99,7 @@ class GoCQHttpAdapter(BotAdapter):
                     break
 
     async def start(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            session: aiohttp.ClientSession
+        async with ClientSession() as session:
             await self.data_receiver(session)
 
     async def close(self):

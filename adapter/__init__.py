@@ -1,8 +1,12 @@
 """
 Bot 驱动器
 """
+import builtins
+import inspect
+import types
 from enum import Enum
 
+from libs import dicts
 from tools.message_chain import (
     MessageNode,
     MessageChain,
@@ -36,6 +40,7 @@ class BotEventType(Enum):
 
 class BotEvent:
     """Bot 事件"""
+
     @property
     def event_type(self) -> BotEventType:
         """事件类型"""
@@ -68,19 +73,19 @@ class BotEvent:
 
     @property
     def command(self) -> str:
-        """触发的指令"""
+        """触发的指令, 在非指令消息时可能为空"""
         raise NotImplementedError()
 
     @property
     def command_options(self) -> list[tuple[str, str]]:
-        """触发的指令对应的选项
+        """触发的指令对应的选项, 在非指令消息时可能为空
 
         格式为 [("name", "content"), ...]"""
         raise NotImplementedError()
 
     @property
     def command_argv(self) -> str:
-        """指令后方的无选项内容"""
+        """指令后方的无选项内容, 在非指令消息时可能为空"""
         raise NotImplementedError()
 
 
@@ -91,13 +96,16 @@ class BotEventParser:
         :param message_node: MessageNode 对象
         :return: 原始数据
         """
-        for _type, _func in [
-            (Text, self.dump_text),
-            (Image, self.dump_image),
-            (Audio, self.dump_audio)
-        ]:
-            if isinstance(message_node, _type):
-                return _func(message_node)
+        node_name = message_node.__class__.__name__
+        func_name = f"dump_{node_name.lower()}"
+
+        self_dict = dicts.filter_mapping(
+            lambda key: inspect.isfunction(self_dict[key]),
+            self.__class__.__dict__
+        )
+
+        if func_name in self_dict.keys():
+            return self_dict[func_name](self, message_node)
         return None
 
     def load(self, event_data) -> BotEvent:
@@ -146,8 +154,18 @@ class BotAdapter:
 
     handle_event() 传入事件数据以处理事件
     """
-    event_handler = None
-    """事件处理器, 在适配器加载时注入"""
+    event_handler: types.FunctionType = None
+    """事件处理器"""
+
+    config: dict = None
+    """一些配置"""
+
+    def __init__(self, config=None, event_handler=None):
+        self.config = config
+        self.event_handler = event_handler
+
+        self.api = self.get_api()
+        self.parser = self.get_parser()
 
     async def handle_event(self, event_data):
         """将事件传入以进行处理

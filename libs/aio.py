@@ -3,11 +3,12 @@ Asyncio
 """
 import asyncio
 import platform
+import time
 from functools import partial
 
 
-def add_task(async_func):
-    asyncio.get_event_loop().create_task(async_func())
+def add_task_to_event_loop(async_func):
+    return asyncio.get_event_loop().create_task(async_func())
 
 
 async def async_run_until_complete(sync_func, *args, **kwargs):
@@ -15,14 +16,8 @@ async def async_run_until_complete(sync_func, *args, **kwargs):
 
 
 def sync_run_until_complete(future):
-    asyncio.get_event_loop().run_until_complete(future)
-
-
-def run_func_until_complete(_func, *args, **kwargs):
-    if asyncio.iscoroutinefunction(_func):
-        return await _func(*args, **kwargs)
-    else:
-        return _func(*args, **kwargs)
+    """用于在事件循环之外同步运行异步函数, 在循环内使用会抛出循环正在运行的异常"""
+    return asyncio.get_event_loop().run_until_complete(future)
 
 
 def check_windows_event_loop_policy():
@@ -32,5 +27,5 @@ def check_windows_event_loop_policy():
 
 
 def run(future_main):
-    check_windows_event_loop_policy()
+    # check_windows_event_loop_policy()
     asyncio.run(future_main)
