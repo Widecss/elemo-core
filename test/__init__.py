@@ -37,8 +37,3 @@ class CommandTest:
 
 class ServiceTest:
     """测试服务模块, 保证其正常读取和保存数据"""
-
-
-def test_exit_func(self):
-    with self.assertRaises(SystemExit):
-        sys.exit(self.defaultTestResult().wasSuccessful())
