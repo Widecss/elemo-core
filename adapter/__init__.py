@@ -1,10 +1,9 @@
 """
 Bot 驱动器
 """
-import builtins
 import inspect
-import types
 from enum import Enum
+from typing import Callable, Coroutine, Dict, Awaitable
 
 from libs import dicts
 from tools.message_chain import (
@@ -146,6 +145,9 @@ class BotApi:
         raise NotImplementedError()
 
 
+BotEventHandlerFunction = Callable[[BotApi, BotEvent], Awaitable[None]]
+
+
 class BotAdapter:
     """Bot客户端的适配器
 
@@ -154,10 +156,10 @@ class BotAdapter:
 
     handle_event() 传入事件数据以处理事件
     """
-    event_handler: types.FunctionType = None
+    event_handler: BotEventHandlerFunction = None
     """事件处理器"""
 
-    config: dict = None
+    config: Dict = None
     """一些配置"""
 
     def __init__(self, config=None, event_handler=None):
