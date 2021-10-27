@@ -26,7 +26,7 @@ class GoCQHttpTest(unittest.TestCase):
         adapter = GoCQHttpAdapter()
         adapter.event_handler = event_handler
         try:
-            asyncio.run(adapter.start())
+            asyncio.run(adapter.on_start())
         except KeyboardInterrupt:
             print("测试结束")
 

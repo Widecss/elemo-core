@@ -3,7 +3,7 @@ Bot 驱动器
 """
 import inspect
 from enum import Enum
-from typing import Callable, Coroutine, Dict, Awaitable
+from typing import Callable, Dict, Awaitable
 
 from libs import dicts
 from tools.chain import (
@@ -142,6 +142,11 @@ class BotEventParser:
 
 class BotApi:
     async def reply(self, message_chain: MessageChain):
+        """
+        回复消息
+
+        :param message_chain: 消息链
+        """
         raise NotImplementedError()
 
 
@@ -151,8 +156,8 @@ BotEventHandlerFunction = Callable[[BotApi, BotEvent], Awaitable[None]]
 class BotAdapter:
     """Bot客户端的适配器
 
-    start() 将在启动时调用, 用于开启事件接收
-    close() 将在关闭时调用, 用于关闭事件接收
+    on_start() 将在启动时调用, 用于开启事件接收
+    on_close() 将在关闭时调用, 用于关闭事件接收
 
     handle_event() 传入事件数据以处理事件
     """
@@ -166,8 +171,8 @@ class BotAdapter:
         self.config = config
         self.event_handler = event_handler
 
-        self.api = self.get_api()
-        self.parser = self.get_parser()
+        self.api = self.create_api()
+        self.parser = self.create_parser()
 
     async def handle_event(self, event_data):
         """将事件传入以进行处理
@@ -180,24 +185,24 @@ class BotAdapter:
                 self.parser.load(event_data)
             )
 
-    def get_api(self) -> BotApi:
+    async def create_api(self) -> BotApi:
         """将自定义的 BotApi 传出
 
         :return: 自定义的 BotApi
         """
         raise NotImplementedError()
 
-    def get_parser(self) -> BotEventParser:
+    async def create_parser(self) -> BotEventParser:
         """将自定义的 BotEventParser 传出
 
         :return: 自定义的 BotEventParser
         """
         raise NotImplementedError()
 
-    async def start(self):
+    async def on_start(self):
         """启动时"""
         raise NotImplementedError()
 
-    async def close(self):
+    async def on_close(self):
         """关闭时"""
-        raise NotImplementedError()
+        pass

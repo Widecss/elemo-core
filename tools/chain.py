@@ -66,10 +66,10 @@ class Text(MessageNode):
 
 
 class Image(MessageNode):
-    def __init__(self, path=None):
-        self.content = path
+    def __init__(self, url_or_path=None):
+        self.content = url_or_path
 
 
 class Audio(MessageNode):
-    def __init__(self, path=None):
-        self.content = path
+    def __init__(self, url_or_path=None):
+        self.content = url_or_path

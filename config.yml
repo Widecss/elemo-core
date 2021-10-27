@@ -9,6 +9,7 @@ adapter:
       ip: 127.0.0.1
       port: 6700
       path: /
+      admin: -1
 
 # 处理模块的配置
 module:

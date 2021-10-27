@@ -3,7 +3,11 @@ Go_CQHttp 适配器
 """
 import logging
 
-from aiohttp import WSMsgType, ClientSession, WSMessage
+from aiohttp import (
+    WSMsgType,
+    ClientSession,
+    WSMessage
+)
 
 from tools.chain import (
     MessageChain,
@@ -69,38 +73,41 @@ class GoCQHttpEventParser(BotEventParser):
         return GoCQHttpEvent(event_data)
 
     def dump_text(self, text: Text):
-        pass
+        return text.content
 
     def dump_image(self, image: Image):
-        pass
+        _ctn = self._escape_cq_code(image.content)
+        return f"[CQ:image,file={_ctn}]"
 
     def dump_audio(self, audio: Audio):
-        pass
+        _ctn = self._escape_cq_code(audio.content)
+        return f"[CQ:record,file={_ctn}]"
+
+    @staticmethod
+    def _escape_cq_code(text: str):
+        return text.replace(",", "&#44;") \
+            .replace("&", "&amp;") \
+            .replace("[", "&#91;") \
+            .replace("]", "&#93;")
 
 
 class GoCQHttpAdapter(BotAdapter):
 
-    def get_api(self) -> BotApi:
+    async def create_api(self) -> BotApi:
         return GoCQHttpApi()
 
-    def get_parser(self) -> GoCQHttpEventParser:
+    async def create_parser(self) -> GoCQHttpEventParser:
         return GoCQHttpEventParser()
 
-    async def data_receiver(self, session: ClientSession):
-        async with session.ws_connect('http://127.0.0.1:6700/') as ws:
-            async for response in ws:
-                response: WSMessage
-                if response.type == WSMsgType.TEXT:
-                    await self.handle_event(response.json())
-                elif response.type == WSMsgType.ERROR:
-                    logging.error(f"GoCQHttp receive error: {response.data}")
+    async def data_receiver(self, response: WSMessage):
+        if response.type == WSMsgType.TEXT:
+            await self.handle_event(response.json())
+        elif response.type == WSMsgType.ERROR:
+            logging.error(f"GoCQHttp receive error: {response.data}")
 
-                if ws.closed:
-                    break
-
-    async def start(self) -> None:
+    async def on_start(self) -> None:
         async with ClientSession() as session:
-            await self.data_receiver(session)
-
-    async def close(self):
-        pass
+            async with session.ws_connect('http://127.0.0.1:6700/event') as ws:
+                response: WSMessage
+                async for response in ws:
+                    await self.data_receiver(response)
