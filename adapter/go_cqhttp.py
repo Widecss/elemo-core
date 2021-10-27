@@ -5,7 +5,7 @@ import logging
 
 from aiohttp import WSMsgType, ClientSession, WSMessage
 
-from tools.message_chain import (
+from tools.chain import (
     MessageChain,
     Image, Text, Audio
 )

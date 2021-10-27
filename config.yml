@@ -1,3 +1,31 @@
+# bot 的配置
 bot:
+  admin: -1
+
+# 客户端适配器的配置
+adapter:
   go-cqhttp:
-    id: -1
+    websocket:
+      ip: 127.0.0.1
+      port: 6700
+      path: /
+
+# 处理模块的配置
+module:
+  enabled:
+    - sample
+  sample:
+    help: 这是一个实例模块
+
+# 数据服务的配置
+service:
+  # 连接
+  connect:
+    mysql:
+      ip: 127.0.0.1
+      port: 3306
+    sqlite:
+      path: ./data/sqlite
+
+  sample:
+    use: sqlite

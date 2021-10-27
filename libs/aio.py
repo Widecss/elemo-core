@@ -27,5 +27,5 @@ def check_windows_event_loop_policy():
 
 
 def run(future_main):
-    # check_windows_event_loop_policy()
+    check_windows_event_loop_policy()
     asyncio.run(future_main)

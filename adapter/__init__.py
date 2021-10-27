@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Callable, Coroutine, Dict, Awaitable
 
 from libs import dicts
-from tools.message_chain import (
+from tools.chain import (
     MessageNode,
     MessageChain,
     Text, Image, Audio
@@ -176,8 +176,8 @@ class BotAdapter:
         """
         if self.event_handler:
             await self.event_handler(
-                self.get_api(),
-                self.get_parser().load(event_data)
+                self.api,
+                self.parser.load(event_data)
             )
 
     def get_api(self) -> BotApi:
