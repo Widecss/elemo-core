@@ -6,7 +6,7 @@ import logging
 from aiohttp import (
     WSMsgType,
     ClientSession,
-    WSMessage
+    WSMessage, ClientWebSocketResponse
 )
 
 from tools.chain import (
@@ -22,45 +22,85 @@ from . import (
 )
 
 
+class GoCQHttpEventType(BotEventType):
+    GoCQHttpLifecycle = "GoCQHttpLifecycle"
+    """生命周期消息"""
+
+    GoCQHttpHeartbeat = "GoCQHttpHeartbeat"
+    """心跳消息"""
+
+
+meta_event_type_str = {
+    "lifecycle": GoCQHttpEventType.GoCQHttpLifecycle,
+    "heartbeat": GoCQHttpEventType.GoCQHttpHeartbeat
+}
+
+message_type_str = {
+    "private": GoCQHttpEventType.BotFriendMessage,
+    "group": GoCQHttpEventType.BotGroupMessage
+}
+
+
 class GoCQHttpEvent(BotEvent):
-    def __init__(self, raw):
-        self.raw = raw
+
+    def __init__(self, raw: dict):
+        self.raw: dict = raw
 
     @property
-    def event_type(self) -> BotEventType:
-        pass
+    def timestamp(self) -> int:
+        return self.raw["time"]
 
     @property
-    def sender_id(self) -> str:
-        pass
+    def type(self) -> GoCQHttpEventType:
+        post_type = self.raw["post_type"]
+
+        if post_type == "meta_event":
+            meta_event_type = self.raw["meta_event_type"]
+            if meta_event_type in meta_event_type_str.keys():
+                return meta_event_type_str[meta_event_type]
+
+        if post_type == "message":
+            message_type = self.raw["message_type"]
+            if message_type in message_type_str.keys():
+                return message_type_str[message_type]
+
+        return GoCQHttpEventType.BotUnknownTypeMessage
+
+    @property
+    def sender_original_id(self) -> str:
+        return str(self.raw["user_id"])
 
     @property
     def sender_name(self) -> str:
-        pass
+        sender: dict = self.raw["sender"]
+        if sender["card"]:
+            return sender["card"]
+        else:
+            return sender["nickname"]
 
     @property
-    def group_id(self) -> str:
-        pass
+    def group_original_id(self) -> str:
+        return str(self.raw["group_id"])
 
     @property
     def group_name(self) -> str:
-        pass
+        raise KeyError("键名 group_name 不存在")
 
     @property
     def command(self) -> str:
-        pass
+        raise NotImplementedError()
 
     @property
     def command_options(self) -> list[tuple[str, str]]:
-        pass
+        raise NotImplementedError()
 
     @property
     def command_argv(self) -> str:
-        pass
+        raise NotImplementedError()
 
     @property
     def message(self) -> MessageChain:
-        pass
+        raise NotImplementedError()
 
 
 class GoCQHttpApi(BotApi):
@@ -92,8 +132,9 @@ class GoCQHttpEventParser(BotEventParser):
 
 
 class GoCQHttpAdapter(BotAdapter):
+    ws: ClientWebSocketResponse
 
-    async def create_api(self) -> BotApi:
+    async def create_api(self) -> GoCQHttpApi:
         return GoCQHttpApi()
 
     async def create_parser(self) -> GoCQHttpEventParser:
@@ -101,13 +142,18 @@ class GoCQHttpAdapter(BotAdapter):
 
     async def data_receiver(self, response: WSMessage):
         if response.type == WSMsgType.TEXT:
-            await self.handle_event(response.json())
+            event = response.json()
+            await self.handle_event(event)
         elif response.type == WSMsgType.ERROR:
             logging.error(f"GoCQHttp receive error: {response.data}")
 
-    async def on_start(self) -> None:
+    async def on_event_loop(self) -> None:
         async with ClientSession() as session:
             async with session.ws_connect('http://127.0.0.1:6700/event') as ws:
+                self.ws = ws
                 response: WSMessage
                 async for response in ws:
                     await self.data_receiver(response)
+
+    async def on_close(self):
+        await self.ws.close()

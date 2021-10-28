@@ -3,12 +3,11 @@ Asyncio
 """
 import asyncio
 import platform
-import time
 from functools import partial
 
 
 def add_task_to_event_loop(async_func):
-    return asyncio.get_event_loop().create_task(async_func())
+    return asyncio.get_event_loop().create_task(async_func)
 
 
 async def async_run_until_complete(sync_func, *args, **kwargs):

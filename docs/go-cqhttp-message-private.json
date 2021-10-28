@@ -1,0 +1,19 @@
+{
+    "font": 0,
+    "message": "1",
+    "message_id": 1917901028,
+    "message_type": "private",
+    "post_type": "message",
+    "raw_message": "1",
+    "self_id": -1,
+    "sender": {
+        "age": 0,
+        "nickname": "nickname1",
+        "sex": "unknown",
+        "user_id": -2
+    },
+    "sub_type": "friend",
+    "target_id": -1,
+    "time": 1635408393,
+    "user_id": -2
+}

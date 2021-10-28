@@ -2,10 +2,10 @@
 Bot 驱动器
 """
 import inspect
-from enum import Enum
+from asyncio import Task
 from typing import Callable, Dict, Awaitable
 
-from libs import dicts
+from libs import dicts, aio
 from tools.chain import (
     MessageNode,
     MessageChain,
@@ -15,40 +15,53 @@ from tools.chain import (
 __all__ = ["BotAdapter", "BotEventType", "BotEvent", "BotApi", "BotEventParser"]
 
 
-class BotEventType(Enum):
+class BotEventType:
     """Bot 事件类型"""
 
-    NoticeMessage = "NoticeMessage"
+    BotNoticeMessage = "BotNoticeMessage"
     """提示消息"""
 
-    RequestMessage = "RequestMessage"
+    BotRequestMessage = "BotRequestMessage"
     """请求消息"""
 
-    GroupCommand = "GroupCommand"
+    BotGroupCommand = "BotGroupCommand"
     """群组指令"""
 
-    FriendCommand = "FriendCommand"
+    BotFriendCommand = "BotFriendCommand"
     """私人指令"""
 
-    GroupMessage = "GroupMessage"
+    BotGroupMessage = "BotGroupMessage"
     """群组消息"""
 
-    FriendMessage = "FriendMessage"
+    BotFriendMessage = "BotFriendMessage"
     """私人消息"""
+
+    BotUnknownTypeMessage = "BotUnknownTypeMessage"
+    """未知类型消息"""
 
 
 class BotEvent:
     """Bot 事件"""
 
     @property
-    def event_type(self) -> BotEventType:
+    def timestamp(self) -> str:
         """事件类型"""
+        raise NotImplementedError()
+
+    @property
+    def type(self) -> BotEventType:
+        """事件类型"""
+        raise NotImplementedError()
+
+    @property
+    def sender_original_id(self) -> str:
+        """发送者的原始 id"""
         raise NotImplementedError()
 
     @property
     def sender_id(self) -> str:
         """发送者 id"""
-        raise NotImplementedError()
+        return self._package_original_id(self.sender_original_id)
 
     @property
     def sender_name(self) -> str:
@@ -56,9 +69,14 @@ class BotEvent:
         raise NotImplementedError()
 
     @property
-    def group_id(self) -> str:
-        """群组 id, 在非群组消息时可能为空"""
+    def group_original_id(self) -> str:
+        """群组的原始 id, 在非群组消息时会抛出异常"""
         raise NotImplementedError()
+
+    @property
+    def group_id(self) -> str:
+        """群组 id, 在非群组消息时会抛出异常"""
+        return self._package_original_id(self.group_original_id)
 
     @property
     def group_name(self) -> str:
@@ -86,6 +104,9 @@ class BotEvent:
     def command_argv(self) -> str:
         """指令后方的无选项内容, 在非指令消息时可能为空"""
         raise NotImplementedError()
+
+    def _package_original_id(self, original_id):
+        return f"{self.__class__.__name__.lower()}_{original_id}"
 
 
 class BotEventParser:
@@ -161,48 +182,64 @@ class BotAdapter:
 
     handle_event() 传入事件数据以处理事件
     """
-    event_handler: BotEventHandlerFunction = None
-    """事件处理器"""
 
     config: Dict = None
     """一些配置"""
 
-    def __init__(self, config=None, event_handler=None):
-        self.config = config
-        self.event_handler = event_handler
+    _event_handler: BotEventHandlerFunction = None
+    """事件处理器"""
 
-        self.api = self.create_api()
-        self.parser = self.create_parser()
+    _api: BotApi = None
+    """Bot 接口"""
+
+    _parser: BotEventParser = None
+    """Bot 事件解析器"""
+
+    _on_start_task: Task = None
+    """Bot 事件循环任务"""
+
+    def __init__(self, config, event_handler):
+        self.config = config
+        self._event_handler = event_handler
 
     async def handle_event(self, event_data):
         """将事件传入以进行处理
 
         :param event_data: 事件数据, 将直接传给 BotEventParser.load()
         """
-        if self.event_handler:
-            await self.event_handler(
-                self.api,
-                self.parser.load(event_data)
+        if self._event_handler:
+            await self._event_handler(
+                self._api,
+                self._parser.load(event_data)
             )
 
     async def create_api(self) -> BotApi:
-        """将自定义的 BotApi 传出
+        """创建自定义的 BotApi
 
         :return: 自定义的 BotApi
         """
         raise NotImplementedError()
 
     async def create_parser(self) -> BotEventParser:
-        """将自定义的 BotEventParser 传出
+        """创建自定义的 BotEventParser
 
         :return: 自定义的 BotEventParser
         """
         raise NotImplementedError()
 
-    async def on_start(self):
+    async def on_event_loop(self):
         """启动时"""
         raise NotImplementedError()
 
     async def on_close(self):
         """关闭时"""
-        pass
+        raise NotImplementedError()
+
+    async def start(self):
+        self._api = await self.create_api()
+        self._parser = await self.create_parser()
+        self._on_start_task = aio.add_task_to_event_loop(self.on_event_loop())
+
+    async def close(self):
+        await self.on_close()
+        self._on_start_task.cancel()

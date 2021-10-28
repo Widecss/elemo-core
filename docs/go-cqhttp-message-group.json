@@ -1,0 +1,26 @@
+{
+    "anonymous": null,
+    "font": 0,
+    "group_id": -3,
+    "message": "\u61c2\u4e86",
+    "message_id": 2055136052,
+    "message_seq": 64050,
+    "message_type": "group",
+    "post_type": "message",
+    "raw_message": "\u61c2\u4e86",
+    "self_id": -1,
+    "sender": {
+        "age": 0,
+        "area": "",
+        "card": "\u9e3d",
+        "level": "",
+        "nickname": "\u67d0\u4fe1",
+        "role": "admin",
+        "sex": "unknown",
+        "title": "",
+        "user_id": -2
+    },
+    "sub_type": "normal",
+    "time": 1635409773,
+    "user_id": -2
+}
