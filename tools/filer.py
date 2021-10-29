@@ -55,7 +55,19 @@ def _ensure_class_dir(cls):
 class Filer:
 
     async def write(self, content, filename) -> int:
+        """
+        保存文件
+
+        :param content: 内容
+        :param filename: 文件名
+        """
         return await write(content, filename, self.__class__)
 
     async def read(self, filename) -> str:
+        """
+        读取文件
+
+        :param filename: 文件名
+        :return: 文件内容
+        """
         return await read(filename, self.__class__)

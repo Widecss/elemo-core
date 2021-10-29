@@ -78,7 +78,7 @@ class BotTask:
 
     async def run(self):
         """任务处理函数, 将在每一个设定的周期执行"""
-        raise NotImplementedError()
+        raise NotImplementedError("TODO")
 
 
 def bot_command():
