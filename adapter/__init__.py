@@ -238,7 +238,7 @@ class BotAdapter:
     async def start(self):
         self._api = await self.create_api()
         self._parser = await self.create_parser()
-        self._on_start_task = aio.add_task_to_event_loop(self.on_event_loop())
+        self._on_start_task = aio.create_task_and_start(self.on_event_loop())
 
     async def close(self):
         await self.on_close()

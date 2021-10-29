@@ -88,3 +88,11 @@ async def post(
             return AioHttpResponse(res)
 
 
+class Requester:
+    @staticmethod
+    async def get(*args, **kwargs) -> Response:
+        return await get(*args, **kwargs)
+
+    @staticmethod
+    async def post(*args, **kwargs) -> Response:
+        return await post(*args, **kwargs)

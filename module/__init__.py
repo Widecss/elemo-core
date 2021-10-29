@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from adapter import BotApi, BotEvent, BotEventType
+from bot import ContextManager
 
 __all__ = [
     "BotApi", "BotEvent", "BotEventType",
@@ -9,7 +10,10 @@ __all__ = [
 ]
 
 name = ""
+"""模块名称"""
+
 description = ""
+"""模块描述"""
 
 
 @dataclass
@@ -37,7 +41,7 @@ class BotCommand:
     description: str = None
     """指令描述"""
 
-    allow_type: list = None
+    allow_type: list[BotEventType] = None
     """允许使用此指令的消息类型"""
 
     admin_only: bool = False
@@ -45,6 +49,9 @@ class BotCommand:
 
     options: list[BotCommandOption] = None
     """对应的指令选项列表"""
+
+    context: "ContextManager" = None
+    """Bot 上下文对象"""
 
     async def handle(self, bot: BotApi, event: BotEvent) -> bool:
         """
@@ -66,6 +73,17 @@ class BotTask:
     cron: str = ""
     """Cron 表达式"""
 
+    context: "ContextManager" = None
+    """Bot 上下文对象"""
+
     async def run(self):
         """任务处理函数, 将在每一个设定的周期执行"""
         raise NotImplementedError()
+
+
+def bot_command():
+    pass
+
+
+def bot_task():
+    pass

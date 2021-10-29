@@ -156,4 +156,5 @@ class GoCQHttpAdapter(BotAdapter):
                     await self.data_receiver(response)
 
     async def on_close(self):
-        await self.ws.close()
+        if self.ws:
+            return await self.ws.close()

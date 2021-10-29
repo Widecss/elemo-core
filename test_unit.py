@@ -39,7 +39,7 @@ class GoCQHttpTest(unittest.TestCase):
                 await asyncio.sleep(5)
                 await adapter.close()
 
-            await aio.add_task_to_event_loop(adapter.start())
+            await aio.create_task_and_start(adapter.start())
             # aio.add_task_to_event_loop(close())
             await asyncio.sleep(10)
 
