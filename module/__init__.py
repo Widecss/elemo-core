@@ -70,7 +70,7 @@ class BotTask:
     description: str = None
     """任务描述"""
 
-    cron: str = ""
+    cron: str = None
     """Cron 表达式"""
 
     context: "ContextManager" = None

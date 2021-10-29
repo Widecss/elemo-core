@@ -15,10 +15,10 @@ from libs import aio
 
 
 class GoCQHttpTest(unittest.TestCase):
-    """测试适配器, 保证其正常接收和发送消息"""
 
     def test_ws_connection(self):
         """WebSocket 连接测试"""
+
         async def event_handler(api: GoCQHttpApi, event_data: GoCQHttpEvent):
             self.assertTrue(isinstance(api, GoCQHttpApi), "api 不是一个 GoCQHttpApi")
 
@@ -50,6 +50,7 @@ class GoCQHttpTest(unittest.TestCase):
 
     def test_message(self):
         """消息测试"""
+
         async def event_handler(api: GoCQHttpApi, event_data: GoCQHttpEvent):
             self.assertTrue(isinstance(event_data, GoCQHttpEvent), "event_data 不是一个 dictionary")
             if event_data.type in [
@@ -68,6 +69,7 @@ class GoCQHttpTest(unittest.TestCase):
             await adapter.start()
             while True:
                 await asyncio.sleep(1)
+
         try:
             asyncio.run(main())
         except KeyboardInterrupt:
@@ -75,8 +77,17 @@ class GoCQHttpTest(unittest.TestCase):
 
 
 class CommandTest:
-    """测试指令模块, 保证其正常处理事件和返回结果"""
+    pass
 
 
 class ServiceTest:
-    """测试服务模块, 保证其正常读取和保存数据"""
+    pass
+
+
+class ToolTest:
+    def filer_test(self):
+        pass
+
+
+class LibTest:
+    pass
