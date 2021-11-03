@@ -13,7 +13,7 @@ from tools.chain import (
     MessageChain,
     Image, Text, Audio
 )
-from . import (
+from .. import (
     BotAdapter,
     BotApi,
     BotEvent,
@@ -100,16 +100,24 @@ class GoCQHttpEvent(BotEvent):
 
     @property
     def message(self) -> MessageChain:
-        raise NotImplementedError()
+        return self.raw["_message"]
+
+    @property
+    def message(self) -> MessageChain:
+        return self.raw["_message"]
 
 
 class GoCQHttpApi(BotApi):
+    async def send_private_msg(self) -> int:
+        pass
+
     async def reply(self, message_chain: MessageChain):
         pass
 
 
 class GoCQHttpEventParser(BotEventParser):
     def load(self, event_data) -> BotEvent:
+        event_data["_message"] = ""
         return GoCQHttpEvent(event_data)
 
     def dump_text(self, text: Text):

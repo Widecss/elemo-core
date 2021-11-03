@@ -46,6 +46,7 @@ class DateFormatFactory:
 def str_from_datetime() -> str:
     """
     返回当前日期 + 时间字符串
+
     :return: 日期 + 时间字符串
     """
     return str_from(DEFAULT_DATETIME_FORMAT)
@@ -54,6 +55,7 @@ def str_from_datetime() -> str:
 def str_from_date() -> str:
     """
     返回当前日期字符串
+
     :return: 日期字符串
     """
     return str_from(DEFAULT_DATE_FORMAT)
@@ -62,6 +64,7 @@ def str_from_date() -> str:
 def str_from_time() -> str:
     """
     返回当前时间字符串
+
     :return: 时间字符串
     """
     return str_from(DEFAULT_TIME_FORMAT)
@@ -77,6 +80,7 @@ def str_from(_format: str, time_array: time.struct_time = None) -> str:
 def time_from(_format: str = DEFAULT_DATETIME_FORMAT, time_string: str = None) -> time.struct_time:
     """
     将时间字符串解析成对应的时间数组，如果不提供则返回当前时间
+
     :param time_string: 时间字符串
     :param _format: 时间字符串格式
     :return: 时间数组
@@ -90,6 +94,7 @@ def time_from(_format: str = DEFAULT_DATETIME_FORMAT, time_string: str = None) -
 def timestamp_from(time_array: time.struct_time = None) -> int:
     """
     返回时间数组对应的时间戳，没有提供则返回当前时间
+
     :param time_array: 时间戳（秒）
     :return: 时间数组
     """
@@ -102,6 +107,7 @@ def timestamp_from(time_array: time.struct_time = None) -> int:
 def time_array_from(timestamp: int = None) -> time.struct_time:
     """
     返回时间戳对应的时间数组，没有提供则返回当前时间
+
     :param timestamp: 时间戳
     :return: 时间数组
     """

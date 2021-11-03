@@ -1,3 +1,6 @@
+"""
+模块
+"""
 from dataclasses import dataclass
 
 from adapter import BotApi, BotEvent, BotEventType

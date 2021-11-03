@@ -10,7 +10,6 @@ class MessageChain:
 
     def __init__(self, *args):
         self._chain = [*args]
-        print(self._chain)
 
     def __add__(self, other):
         if isinstance(other, MessageNode):
